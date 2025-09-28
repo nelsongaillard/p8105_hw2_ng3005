@@ -42,7 +42,7 @@ pols_df =
   select(-c(prez_gop, prez_dem, day))
 ```
 
-Now, let's clean the data in snp.csv
+Next, let's clean the data in snp.csv
 
 ```{r}
 snp_df =
@@ -70,4 +70,16 @@ snp_df =
   relocate(year, month, close)
 ```
 
+Third, let's clean the unemployment.csv data
+
+```{r}
+unemployment_df =
+  read_csv("data/unemployment.csv", na = c("NA", ".", "")) |>
+  janitor::clean_names() |>
+  pivot_longer(
+    cols = jan:dec,
+    names_to = "month",
+    values_to = "unemployment_pct"
+  )
+```
 
