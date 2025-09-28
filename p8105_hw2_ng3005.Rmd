@@ -35,6 +35,7 @@ pols_df =
     "11" ~ "November",
     "12" ~ "December"
   )) |>
+  mutate(year = as.integer(year)) |>
   mutate(president = case_when(
     prez_gop == 1 ~ "gop",
     prez_dem == 1 ~ "dem"
@@ -66,6 +67,8 @@ snp_df =
     "11" ~ "November",
     "12" ~ "December"
   )) |>
+  mutate(year = as.integer(year)) |>
+  mutate(year = ifelse(year > 50, 1900 + year, 2000 + year)) |>
   select(-day) |>
   relocate(year, month, close)
 ```
@@ -80,6 +83,15 @@ unemployment_df =
     cols = jan:dec,
     names_to = "month",
     values_to = "unemployment_pct"
-  )
+  ) |>
+  mutate(year = as.integer(year))
 ```
+
+Finally, we can merge these datasets into one!
+
+```{r}
+fivethirtyeight_df =
+  left_join(pols_df, snp_df, unemployment_df, by = c("year", "month"))
+```
+
 
