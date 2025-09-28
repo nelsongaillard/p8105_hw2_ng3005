@@ -84,14 +84,23 @@ unemployment_df =
     names_to = "month",
     values_to = "unemployment_pct"
   ) |>
-  mutate(year = as.integer(year))
+  mutate(
+    year = as.integer(year),
+    month = factor(month,
+                   levels = tolower(month.abb),
+                   labels = month.name),
+    month = as.character(month)
+  )
 ```
 
 Finally, we can merge these datasets into one!
 
 ```{r}
+pols_snp_df =
+  left_join(pols_df, snp_df, by = c("year", "month"))
+
 fivethirtyeight_df =
-  left_join(pols_df, snp_df, unemployment_df, by = c("year", "month"))
+  left_join(pols_snp_df, unemployment_df, by = c("year", "month"))
 ```
 
-
+This new dataset `fivethirtyeight_df` contains `r ncol(fivethirtyeight_df)` total columns and `r nrow(fivethirtyeight_df)` rows. The `year` variable ranges from `r min(fivethirtyeight_df$year)` to `r max(fivethirtyeight_df$year)`. Alongside the `year` and `month` data, the dataset breaks down the number of governors, senators, and house representatives in the GOP and Democratic Party using the variables: `gov_gop`, `sen_gop`, `rep_gop`, `gov_dem`, `sen_dem`, and `rep_dem`. Lastly, the newly created `president` variable indicates the political party the active president is from, and `close` refers to the closing values of the S&P stock index on that day the observation was created.
