@@ -42,4 +42,32 @@ pols_df =
   select(-c(prez_gop, prez_dem, day))
 ```
 
+Now, let's clean the data in snp.csv
+
+```{r}
+snp_df =
+  read_csv("data/snp.csv", na = c("NA", ".", "")) |>
+  janitor::clean_names() |>
+  separate(
+    date, into = c("month", "day", "year")
+  ) |>
+  mutate(month = case_match(
+    month,
+    "1" ~ "January", 
+    "2" ~ "February",
+    "3" ~ "March",
+    "4" ~ "April", 
+    "5" ~ "May",
+    "6" ~ "June",
+    "7" ~ "July", 
+    "8" ~ "August",
+    "9" ~ "September",
+    "10" ~ "October",
+    "11" ~ "November",
+    "12" ~ "December"
+  )) |>
+  select(-day) |>
+  relocate(year, month, close)
+```
+
 
