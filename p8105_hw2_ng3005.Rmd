@@ -121,3 +121,25 @@ trash_df =
   mutate(sports_balls = as.integer(round(sports_balls)))
 ```
 
+Now, we can load the Professor Trash Wheel excel sheet and clean
+
+```{r}
+prof_df = 
+  read_excel("data/202409 Trash Wheel Collection Data.xlsx",
+             sheet = "Professor Trash Wheel",
+             range = "A2:M120") |>
+  janitor::clean_names()
+```
+
+Finally, we can load the Gwynnda Trash Wheel excel sheet and clean
+
+```{r}
+gwynnda_df =
+  read_excel("data/202409 Trash Wheel Collection Data.xlsx",
+             sheet = "Gwynnda Trash Wheel",
+             range = "A2:L265") |>
+  janitor::clean_names()
+```
+
+
+
