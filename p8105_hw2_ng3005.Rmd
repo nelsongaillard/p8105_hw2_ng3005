@@ -110,7 +110,7 @@ This new dataset `fivethirtyeight_df` contains `r ncol(fivethirtyeight_df)` tota
 
 ### Problem 2
 
-Let's load in the excel file
+Let's load in the Mr. Trash Wheel excel sheet and clean
 
 ```{r}
 trash_df =
