@@ -250,6 +250,6 @@ top10_df =
 knitr::kable(top10_df)
 ```
 
-From the newly generated table, the neighborhood with the greatest rent drop between January 2020 and January 2021 was Lower Manhattan with a rent drop of over $912. 
+From the newly generated table, the neighborhood with the greatest rent drop between January 2020 and January 2021 was `r top10_df$neighborhood[1]` with a rent drop of over $`r abs(ceiling(top10_df$drop[1]))`. 
 
 
