@@ -224,9 +224,33 @@ In the tidy dataset `zip_zori_df`, there are a total of `r nrow(zip_zori_df)` ob
 There are `r n_distinct(zip_df$zip_code) - n_distinct(zori_df$zip_code)` zip codes that appear in `zip_df` that do not appear in `zori_df`. A few examples of zip codes missing from `zori_df` are `r paste(head(setdiff(zip_df$zip_code, zori_df$zip_code), 5))`. These zip codes may be missing from `zori_df` because this dataset includes data from Zillow with the zip codes of neighborhoods with containing rental properties. It is entirely possible that the zip codes included in `zip_df` but not `zori_df` do not contain rental properties (i.e. perhaps these zip codes only consist of properties you can purchase). Similarly, these zip codes may encapsulate neighborhoods in which no people live. 
 
 ```{r}
+january_df =
+  zip_zori_df |>
+  mutate(
+    date = str_remove(date, "^x"),
+    date = str_replace_all(date, "_", "-"),
+    date = ymd(date),
+    ym =substr(date, 1, 7)) |>
+  filter(ym %in% c("2020-01", "2021-01")) |>
+  relocate(date)
+  
+top10_df =
+  january_df |>
+  mutate(year = substr(ym, 1, 4)) |>
+  select(zip_code, county, neighborhood, year, zori) |>
+  distinct() |>
+  pivot_wider(
+    names_from = year,
+    values_from = zori,
+    names_prefix = "rent_") |>
+  mutate(drop = rent_2021 - rent_2020) |>
+  select(zip_code, county, neighborhood, rent_2020, rent_2021, drop) |>
+  arrange(drop) |>
+  head(10)
 
+knitr::kable(top10_df)
 ```
 
-
+From the newly generated table, the neighborhood with the greatest rent drop between January 2020 and January 2021 was Lower Manhattan with a rent drop of over $912. 
 
 
