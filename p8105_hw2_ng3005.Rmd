@@ -190,36 +190,35 @@ zori_df =
   read_csv("data/Zip_zori_uc_sfrcondomfr_sm_month_NYC.csv", na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   pivot_longer(
-    x2015_01_31:x2024_08_31,
+    cols = x2015_01_31:x2024_08_31,
     names_to = "date",
     values_to = "zori") |>
-  rename(zip_code = region_name,
-         county = county_name) |>
-  mutate(county = recode(county,
+  mutate(county_name = recode(county_name,
                     "Queens County" = "Queens", 
                     "Kings County" = "Kings",
                     "New York County" = "New York",
                     "Bronx County" = "Bronx",
                     "Richmond County" = "Richmond")) |>
+  rename(zip_code = region_name,
+         county = county_name) |>
   relocate(zip_code, county)
 
 zip_df =
   read_csv("data/Zip Codes.csv", na = c("NA", ".", "")) |>
   janitor::clean_names() |>
   relocate(zip_code, county)
-  
 ```
 
 Now, in both datasets, we have a column called `zip_code` through which we can merge
 
 ```{r}
 zip_zori_df =
-  left_join(zip_df, zori_df, by = c("zip_code", "county")) |>
+  left_join(zori_df, zip_df, by = c("zip_code", "county")) |>
   janitor::clean_names() |>
   relocate(county, zip_code, neighborhood, zori)
 ```
 
-In the tidy dataset `zip_zori_df`, there are a total of `r nrow(zip_zori_df)` observations. There are `r n_distinct(zip_zori_df$zip_code)` unique zip codes and `r n_distinct(zip_zori_df$neighborhood)`
+In the tidy dataset `zip_zori_df`, there are a total of `r nrow(zip_zori_df)` observations. There are `r n_distinct(na.omit(zip_zori_df$zip_code))` unique zip codes and `r n_distinct(na.omit(zip_zori_df$neighborhood))` unique neighborhoods.
 
 There are `r n_distinct(zip_df$zip_code) - n_distinct(zori_df$zip_code)` zip codes that appear in `zip_df` that do not appear in `zori_df`. A few examples of zip codes missing from `zori_df` are `r paste(head(setdiff(zip_df$zip_code, zori_df$zip_code), 5))`. These zip codes may be missing from `zori_df` because this dataset includes data from Zillow with the zip codes of neighborhoods with containing rental properties. It is entirely possible that the zip codes included in `zip_df` but not `zori_df` do not contain rental properties (i.e. perhaps these zip codes only consist of properties you can purchase). Similarly, these zip codes may encapsulate neighborhoods in which no people live. 
 
